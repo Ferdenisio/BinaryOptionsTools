@@ -22,6 +22,9 @@ BinaryOptionsTools/platforms/pocketoption/backend/__init__.py
 BinaryOptionsTools/platforms/pocketoption/backend/ws/__init__.py
 BinaryOptionsTools/platforms/pocketoption/backend/ws/client.py
 BinaryOptionsTools/platforms/pocketoption/backend/ws/chat/__init__.py
+BinaryOptionsTools/platforms/pocketoption/login/__init__.py
+BinaryOptionsTools/platforms/pocketoption/login/test/__init__.py
+BinaryOptionsTools/platforms/pocketoption/login/test/login.py
 BinaryOptionsTools/platforms/pocketoption/test/__init__.py
 BinaryOptionsTools/platforms/pocketoption/test/webdrivertest.py
 BinaryOptionsTools/research/__init__.py
