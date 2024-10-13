@@ -1,43 +1,47 @@
+// Parâmetros do robô
+input int rsiPeriod = 14;
+input double rsiOverbought = 70;
+input double rsiOversold = 30;
+input double lotSize = 1.0; // Tamanho da posição
 
-# BinaryOptionsTools
+// Variáveis globais
+datetime lastOrderTime = 0;
+double lastProfit = 0;
 
-**BinaryOptionsTools** is a powerful suite of tools designed to enhance your binary options trading experience. Whether you're looking for analysis, strategy optimization, or execution tools, this project provides a variety of solutions to help you make informed trading decisions.
+// Função principal
+void OnTick() {
+    // Verificar o tempo entre as operações
+    if (TimeCurrent() - lastOrderTime < 1) return;
 
-## Features
+    double rsiValue = iRSI(NULL, 0, rsiPeriod, PRICE_CLOSE, 0);
+    
+    // Lógica de compra
+    if (rsiValue < rsiOversold) {
+        if (OrderSend(Symbol(), OP_BUY, lotSize, Ask, 2, 0, 0, "RSI Buy", 0, 0, clrGreen) > 0) {
+            lastOrderTime = TimeCurrent();
+        }
+    }
+    // Lógica de venda
+    else if (rsiValue > rsiOverbought) {
+        if (OrderSend(Symbol(), OP_SELL, lotSize, Bid, 2, 0, 0, "RSI Sell", 0, 0, clrRed) > 0) {
+            lastOrderTime = TimeCurrent();
+        }
+    }
+}
 
-- 📊 **Real-time market data integration**: Stay updated with the latest market information.
-- 🔎 **Technical analysis tools**: Leverage built-in indicators to analyze market trends and patterns.
-- 🤖 **Strategy development**: Develop, backtest, and optimize your binary options trading strategies.
-- 📈 **Automated trading execution**: Automate your trading strategies directly within the toolset.
+// Função para gerenciar risco
+void ManageRisk() {
+    if (OrdersTotal() >= 3 || (TimeCurrent() - lastOrderTime >= 43200)) {
+        for (int i = OrdersTotal() - 1; i >= 0; i--) {
+            if (OrderSelect(i, SELECT_BY_POS)) {
+                OrderClose(OrderTicket());
+            }
+        }
+        Sleep(300000); // Espera 5 minutos antes de reiniciar
+    }
+}
 
-## Getting Started
-
-1. Clone the repository:
-    ```bash
-    git clone https://github.com/theshadow76/BinaryOptionsTools.git
-    cd BinaryOptionsTools
-    ```
-
-2. Install dependencies:
-    ```bash
-    pip install -r requirements.txt
-    ```
-
-3. Run the application:
-    ```bash
-    python main.py
-    ```
-
-## Contributing
-
-We welcome contributions from the community! Whether it's a bug fix, feature request, or new tool, feel free to open an issue or create a pull request.
-
-## Join the Community
-
-Connect with other traders, discuss strategies, and stay up to date with the latest features. Join our community on Discord:
-
-👉 [Join us on Discord](https://discord.gg/H8er9mbF4V)
-
----
-
-Happy Trading!
+// Função chamada periodicamente
+void OnTimer() {
+    ManageRisk();
+}
